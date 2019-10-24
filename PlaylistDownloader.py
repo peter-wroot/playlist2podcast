@@ -61,4 +61,4 @@ for index, video in enumerate(playlist_contents_list):
     # Deletes the temp file (the one without the metadata)
     os.remove(temp_file_name)
 
-print("Complete! Downloaded " + total_playlist_items + " tracks.")
+print("Complete! Downloaded " + str(total_playlist_items) + " tracks.")
