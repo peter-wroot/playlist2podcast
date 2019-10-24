@@ -6,18 +6,25 @@ Only tested on windows - should work on Linux/MacOS if you provide youtube-dl an
 
 ## Requirements:
 
-youtube-dl: download the latest windows binary and put it in the same folder as the script  
-ffmpeg: download the latest windows binary and put it in the same folder as the script  
+Executables:  
+* youtube-dl   
+* ffmpeg  
+
+Python Modules:
+* os
+* subprocess
+* json
+* argparse
 
 ## Command-Line Arguments
 
-| Switch    | Usage                                             |
-|-          |-                                                  |
-| `-p`      | URL of YouTube Podcast                            |
-| `-t`      | String to embed as the podcast title metadata     |
-| `-a`      | String to embed as the podcast artist metadata    |
-| `-y`      | Path to youtube-dl executable                     |
-| `-f`      | Path to ffmpeg executable                         |
+| Switch    | Usage                                             | Default           |
+|-          |-                                                  | -                 |
+| `-p`      | URL of YouTube Podcast                            | N/A
+| `-t`      | String to embed as the podcast title metadata     | N/A
+| `-a`      | String to embed as the podcast artist metadata    | N/A
+| `-y`      | Path to youtube-dl executable                     | `youtube-dl.exe` (in script directory)  |
+| `-f`      | Path to ffmpeg executable                         | `ffmpeg.exe` (in script directory)      |
 
 ## Notes
 
