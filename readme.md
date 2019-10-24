@@ -32,3 +32,4 @@ Python Modules:
 * Artist, podcast title, and track number are embedded into the finished mp3 file.
 * track number and track title are set as the file name for easy organization.
 * Automatic removal of non-valid characters from the file name.
+* Creates directory structure for Podcast Author / Podcast title 

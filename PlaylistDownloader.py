@@ -16,6 +16,14 @@ podcast_author = arguments.artist
 youtube_dl_path = arguments.youtubedl
 ffmpeg_path = arguments.ffmpeg
 
+# Temp file path to youtube-dl to download/convert files in
+temp_path = "tmp"
+os.makedirs(temp_path, exist_ok=True)
+
+# Full file path for the finished files to be saved in.
+save_path = os.path.join(podcast_author,podcast_title)
+os.makedirs(save_path, exist_ok=True)
+
 # Runs youtube-dl to retrieve the contents of the playlist without actually downloading it.
 playlist_contents = subprocess.getoutput([youtube_dl_path, "-j", "--flat-playlist", arguments.playlist])
 
@@ -43,12 +51,16 @@ for index, video in enumerate(playlist_contents_list):
         video_title = video_title.replace(char, "-")
     final_file_name = video_title.replace('"',"")
     final_file_name = (track_number).zfill(2) + " - " + final_file_name + ".mp3"
+    final_file_path = os.path.join(save_path,final_file_name)
 
     # Sets up some temp files names so we can add the track metadata
     temp_file_name = video_id + ".mp3"
+    temp_file_path = os.path.join(temp_path,temp_file_name)
+
+    output_format = os.path.join(temp_path,"%(id)s.%(ext)s")
 
     # Runs youtube-dl to download the video, extract the audio, and save it as an MP3 with the file name matching the youtube ID
-    subprocess.run([youtube_dl_path, "--extract-audio", "--audio-quality" ,"0", "--audio-format", "mp3", "--embed-thumbnail", "--output","%(id)s.%(ext)s", video_id])
+    subprocess.run([youtube_dl_path, "--extract-audio", "--audio-quality" ,"0", "--audio-format", "mp3", "--embed-thumbnail", "--output", output_format, video_id])
 
     # Sets up variables with the correct formatting so we can pass them to ffmpeg and embed the metadata
     meta_tracknumber = "track=" + track_number
@@ -57,9 +69,9 @@ for index, video in enumerate(playlist_contents_list):
     meta_track = "title=" + track_title
 
     # Runs ffmpeg and embeds the
-    subprocess.run([ffmpeg_path, "-i", temp_file_name, "-metadata", meta_tracknumber, "-metadata",  meta_track, "-metadata", meta_album, "-metadata", meta_artist, final_file_name])
+    subprocess.run([ffmpeg_path, "-i", temp_file_path, "-metadata", meta_tracknumber, "-metadata",  meta_track, "-metadata", meta_album, "-metadata", meta_artist, final_file_path])
 
     # Deletes the temp file (the one without the metadata)
-    os.remove(temp_file_name)
+    os.remove(temp_file_path)
 
 print("Complete! Downloaded " + str(total_playlist_items) + " tracks.")
