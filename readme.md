@@ -23,8 +23,8 @@ Python Modules:
 | `-p`      | URL of YouTube Podcast                            | N/A
 | `-t`      | String to embed as the podcast title metadata     | N/A
 | `-a`      | String to embed as the podcast artist metadata    | N/A
-| `-y`      | Path to youtube-dl executable                     | `youtube-dl.exe` (in script directory)  |
-| `-f`      | Path to ffmpeg executable                         | `ffmpeg.exe` (in script directory)      |
+| `-y`      | Path to youtube-dl executable                     | `youtube-dl` (in path)  |
+| `-f`      | Path to ffmpeg executable                         | `ffmpeg` (in path)      |
 
 ## Notes
 

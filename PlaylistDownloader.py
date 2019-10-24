@@ -6,8 +6,8 @@ argument_parser = argparse.ArgumentParser()
 argument_parser.add_argument("-p","--playlist")
 argument_parser.add_argument("-t","--title")
 argument_parser.add_argument("-a","--artist")
-argument_parser.add_argument("-y","--youtubedl", default="youtube-dl.exe")
-argument_parser.add_argument("-f","--ffmpeg", default="ffmpeg.exe")
+argument_parser.add_argument("-y","--youtubedl", default="youtube-dl")
+argument_parser.add_argument("-f","--ffmpeg", default="ffmpeg")
 arguments=argument_parser.parse_args()
 
 # metadata, pulled from command-line arguments.
