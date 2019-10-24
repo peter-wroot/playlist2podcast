@@ -6,19 +6,22 @@ argument_parser = argparse.ArgumentParser()
 argument_parser.add_argument("-p","--playlist")
 argument_parser.add_argument("-t","--title")
 argument_parser.add_argument("-a","--artist")
-argument_parser.add_argument("-y","--youtube-dl")
-argument_parser.add_argument("-f","--ffmpeg")
+argument_parser.add_argument("-y","--youtubedl", default="youtube-dl.exe")
+argument_parser.add_argument("-f","--ffmpeg", default="ffmpeg.exe")
 arguments=argument_parser.parse_args()
 
 # metadata, pulled from command-line arguments.
 podcast_title = arguments.title
 podcast_author = arguments.artist
+youtube_dl_path = arguments.youtubedl
+ffmpeg_path = arguments.ffmpeg
 
 # Runs youtube-dl to retrieve the contents of the playlist without actually downloading it.
-playlist_contents = subprocess.getoutput(["youtube-dl.exe", "-j", "--flat-playlist", arguments.playlist])
+playlist_contents = subprocess.getoutput([youtube_dl_path, "-j", "--flat-playlist", arguments.playlist])
 
 # Turns the multi-line string returned from the previous command into a list
 playlist_contents_list = playlist_contents.splitlines()
+total_playlist_items = len(playlist_contents_list)
 
 # Runs through the list and downloads/converts each video
 for index, video in enumerate(playlist_contents_list):
@@ -37,16 +40,14 @@ for index, video in enumerate(playlist_contents_list):
     # Removes illegal characters from the video title so that we can use it as a file name. Also adds leading zeroes, track id, and file extension.
     for char in ['NUL','\',''//',':','*','<','>','|']:
         video_title = video_title.replace(char, "-")
-
     final_file_name = video_title.replace('"',"")
-    final_file_name = (track_number).zfill(2) + " " + final_file_name + ".mp3"
-    print("FINAL FILE NAME: " + final_file_name)
+    final_file_name = (track_number).zfill(2) + " - " + final_file_name + ".mp3"
 
-    # Sets up some temp files names so we can play with the track metadata
+    # Sets up some temp files names so we can add the track metadata
     temp_file_name = video_id + ".mp3"
 
     # Runs youtube-dl to download the video, extract the audio, and save it as an MP3 with the file name matching the youtube ID
-    subprocess.run(["youtube-dl.exe", "--extract-audio", "--audio-quality" ,"0", "--audio-format", "mp3", "--embed-thumbnail", "--output","%(id)s.%(ext)s", video_id])
+    subprocess.run([youtube_dl_path, "--extract-audio", "--audio-quality" ,"0", "--audio-format", "mp3", "--embed-thumbnail", "--output","%(id)s.%(ext)s", video_id])
 
     # Sets up variables with the correct formatting so we can pass them to ffmpeg and embed the metadata
     meta_tracknumber = "track=" + track_number
@@ -55,8 +56,9 @@ for index, video in enumerate(playlist_contents_list):
     meta_track = "title=" + video_title
 
     # Runs ffmpeg and embeds the
-    subprocess.run(["ffmpeg.exe", "-i", temp_file_name, "-metadata", meta_tracknumber, "-metadata",  meta_track, "-metadata", meta_album, "-metadata", meta_artist, final_file_name])
+    subprocess.run([ffmpeg_path, "-i", temp_file_name, "-metadata", meta_tracknumber, "-metadata",  meta_track, "-metadata", meta_album, "-metadata", meta_artist, final_file_name])
 
     # Deletes the temp file (the one without the metadata)
     os.remove(temp_file_name)
 
+print("Complete! Downloaded " + total_playlist_items + " tracks.")
