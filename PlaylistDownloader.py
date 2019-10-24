@@ -47,7 +47,7 @@ for index, video in enumerate(playlist_contents_list):
     print("ID: " + video_id)
 
     # Removes illegal characters from the video title so that we can use it as a file name. Also adds leading zeroes, track id, and file extension.
-    for char in ['NUL','\',''//',':','*','<','>','|']:
+    for char in ['NUL','\',''//',':','*','?','<','>','|']:
         video_title = video_title.replace(char, "-")
     final_file_name = video_title.replace('"',"")
     final_file_name = (track_number).zfill(2) + " - " + final_file_name + ".mp3"
