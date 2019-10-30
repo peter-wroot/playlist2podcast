@@ -26,6 +26,12 @@ Python Modules:
 | `-y`      | Path to youtube-dl executable                     | `youtube-dl` (in path)  |
 | `-f`      | Path to ffmpeg executable                         | `ffmpeg` (in path)      |
 
+## Example
+
+`python playlist2podcast.py -p https://www.youtube.com/playlist?list=PL0CFk33kNHvSdeJm6HQtiJygOCV0o9JdK -t "Citation Needed"
+-a " The Technical Difficulties"`
+
+
 ## Notes
 
 * Tracks are automatically numbered based on their position in the playlist.
