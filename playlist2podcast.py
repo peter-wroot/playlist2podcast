@@ -1,5 +1,5 @@
 # Import required modules
-import os, subprocess, json, argparse
+import os, subprocess, json, argparse,tempfile
 
 # command-line arguments
 argument_parser = argparse.ArgumentParser()
@@ -18,7 +18,8 @@ ffmpeg_path = arguments.ffmpeg
 playlist_url = arguments.playlist
 
 # Temp file path to youtube-dl to download/convert files in
-temp_path = "tmp"
+osTempPath = tempfile.gettempdir()
+temp_path = os.path.join(osTempPath,"playlist2podcast")
 os.makedirs(temp_path, exist_ok=True)
 
 # Full file path for the finished files to be saved in.
@@ -52,10 +53,10 @@ for index, video in enumerate(playlist_contents_list):
 
     # Removes illegal characters from the video title so that we can use it as a file name. Also adds leading zeroes, track id, and file extension.
     for char in ['NUL','\',''//',':','*','?','<','>','|']:
-    video_title = video_title.replace(char, "-")
-    final_file_name = video_title.replace('"',"")
-    final_file_name = (track_number).zfill(2) + " - " + final_file_name + ".mp3"
-    final_file_path = os.path.join(save_path,final_file_name)
+        video_title = video_title.replace(char, "-")
+        final_file_name = video_title.replace('"',"")
+        final_file_name = (track_number).zfill(2) + " - " + final_file_name + ".mp3"
+        final_file_path = os.path.join(save_path,final_file_name)
 
     # Sets up some temp files names so we can add the track metadata
     temp_file_name = video_id + ".mp3"
