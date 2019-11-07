@@ -15,6 +15,7 @@ podcast_title = arguments.title
 podcast_author = arguments.artist
 youtube_dl_path = arguments.youtubedl
 ffmpeg_path = arguments.ffmpeg
+playlist_url = arguments.playlist
 
 # Temp file path to youtube-dl to download/convert files in
 temp_path = "tmp"
@@ -24,12 +25,15 @@ os.makedirs(temp_path, exist_ok=True)
 save_path = os.path.join(podcast_author,podcast_title)
 os.makedirs(save_path, exist_ok=True)
 
+
+print("[youtube-dl] Downloading playlist information...")
 # Runs youtube-dl to retrieve the contents of the playlist without actually downloading it.
-playlist_contents = subprocess.getoutput([youtube_dl_path, "-j", "--flat-playlist", arguments.playlist])
+playlist_contents = subprocess.getoutput([youtube_dl_path + " -j --flat-playlist " + playlist_url])
 
 # Turns the multi-line string returned from the previous command into a list
 playlist_contents_list = playlist_contents.splitlines()
 total_playlist_items = len(playlist_contents_list)
+
 
 # Runs through the list and downloads/converts each video
 for index, video in enumerate(playlist_contents_list):
@@ -42,13 +46,13 @@ for index, video in enumerate(playlist_contents_list):
     track_number = str(int(index) + 1)
     
     # Prints video details to the console.
-    print("Title: " + video_title)
-    print("Index: " + track_number)
-    print("ID: " + video_id)
+    #print("Title: " + video_title)
+    #print("Index: " + track_number)
+    #print("ID: " + video_id)
 
     # Removes illegal characters from the video title so that we can use it as a file name. Also adds leading zeroes, track id, and file extension.
     for char in ['NUL','\',''//',':','*','?','<','>','|']:
-        video_title = video_title.replace(char, "-")
+    video_title = video_title.replace(char, "-")
     final_file_name = video_title.replace('"',"")
     final_file_name = (track_number).zfill(2) + " - " + final_file_name + ".mp3"
     final_file_path = os.path.join(save_path,final_file_name)
@@ -60,7 +64,9 @@ for index, video in enumerate(playlist_contents_list):
     output_format = os.path.join(temp_path,"%(id)s.%(ext)s")
 
     # Runs youtube-dl to download the video, extract the audio, and save it as an MP3 with the file name matching the youtube ID
-    subprocess.run([youtube_dl_path, "--extract-audio", "--audio-quality" ,"0", "--audio-format", "mp3", "--embed-thumbnail", "--output", output_format, video_id])
+    #print("[youtube-dl] ")
+    print("[youtube-dl] Downloading: " + video_title + " (video " + str(index + 1) + " of " + str(total_playlist_items) + ")")
+    subprocess.run([youtube_dl_path, "--quiet", "--extract-audio", "--audio-quality" ,"0", "--audio-format", "mp3", "--embed-thumbnail", "--output", output_format, video_id])
 
     # Sets up variables with the correct formatting so we can pass them to ffmpeg and embed the metadata
     meta_tracknumber = "track=" + track_number
@@ -69,7 +75,8 @@ for index, video in enumerate(playlist_contents_list):
     meta_track = "title=" + track_title
 
     # Runs ffmpeg and embeds the
-    subprocess.run([ffmpeg_path, "-i", temp_file_path, "-metadata", meta_tracknumber, "-metadata",  meta_track, "-metadata", meta_album, "-metadata", meta_artist, final_file_path])
+    print("[ffmpeg] Embedding metadata...")
+    subprocess.run([ffmpeg_path, "-loglevel", "quiet", "-i", temp_file_path, "-metadata", meta_tracknumber, "-metadata",  meta_track, "-metadata", meta_album, "-metadata", meta_artist, final_file_path])
 
     # Deletes the temp file (the one without the metadata)
     os.remove(temp_file_path)
