@@ -1,5 +1,9 @@
 # Import required modules
-import os, subprocess, json, argparse,tempfile
+import os, subprocess, json, argparse, tempfile, pathlib
+
+# Uses pathlib to get the user's home directory, and then joins the playlist2podcast directory
+user_home_directory = str(pathlib.Path.home())
+default_save_location = os.path.join(user_home_directory, "playlist2podcast")
 
 # command-line arguments
 argument_parser = argparse.ArgumentParser()
@@ -8,6 +12,7 @@ argument_parser.add_argument("-t","--title")
 argument_parser.add_argument("-a","--artist")
 argument_parser.add_argument("-y","--youtubedl", default="youtube-dl")
 argument_parser.add_argument("-f","--ffmpeg", default="ffmpeg")
+argument_parser.add_argument("-o","--outputdirectory",default=default_save_location)
 arguments=argument_parser.parse_args()
 
 # metadata, pulled from command-line arguments.
@@ -16,6 +21,7 @@ podcast_author = arguments.artist
 youtube_dl_path = arguments.youtubedl
 ffmpeg_path = arguments.ffmpeg
 playlist_url = arguments.playlist
+save_location = arguments.outputdirectory
 
 # Temp file path to youtube-dl to download/convert files in
 osTempPath = tempfile.gettempdir()
@@ -23,18 +29,17 @@ temp_path = os.path.join(osTempPath,"playlist2podcast")
 os.makedirs(temp_path, exist_ok=True)
 
 # Full file path for the finished files to be saved in.
-save_path = os.path.join(podcast_author,podcast_title)
+save_path = os.path.join(save_location,podcast_author,podcast_title)
 os.makedirs(save_path, exist_ok=True)
+print("[playlist2podcast] Final Output Location: " + save_path)
 
-
-print("[youtube-dl] Downloading playlist information...")
 # Runs youtube-dl to retrieve the contents of the playlist without actually downloading it.
+print("[youtube-dl] Downloading playlist information...")
 playlist_contents = subprocess.getoutput([youtube_dl_path + " -j --flat-playlist " + playlist_url])
 
 # Turns the multi-line string returned from the previous command into a list
 playlist_contents_list = playlist_contents.splitlines()
 total_playlist_items = len(playlist_contents_list)
-
 
 # Runs through the list and downloads/converts each video
 for index, video in enumerate(playlist_contents_list):
@@ -45,15 +50,10 @@ for index, video in enumerate(playlist_contents_list):
     track_title = video_title
     video_id = video_info_json["id"]
     track_number = str(int(index) + 1)
-    
-    # Prints video details to the console.
-    #print("Title: " + video_title)
-    #print("Index: " + track_number)
-    #print("ID: " + video_id)
 
     # Removes illegal characters from the video title so that we can use it as a file name. Also adds leading zeroes, track id, and file extension.
     for char in ['NUL','\',''//',':','*','?','<','>','|']:
-        video_title = video_title.replace(char, "-")
+        video_title = video_title.replace(char, " -")
         final_file_name = video_title.replace('"',"")
         final_file_name = (track_number).zfill(2) + " - " + final_file_name + ".mp3"
         final_file_path = os.path.join(save_path,final_file_name)
@@ -61,11 +61,9 @@ for index, video in enumerate(playlist_contents_list):
     # Sets up some temp files names so we can add the track metadata
     temp_file_name = video_id + ".mp3"
     temp_file_path = os.path.join(temp_path,temp_file_name)
-
     output_format = os.path.join(temp_path,"%(id)s.%(ext)s")
 
     # Runs youtube-dl to download the video, extract the audio, and save it as an MP3 with the file name matching the youtube ID
-    #print("[youtube-dl] ")
     print("[youtube-dl] Downloading: " + video_title + " (video " + str(index + 1) + " of " + str(total_playlist_items) + ")")
     subprocess.run([youtube_dl_path, "--quiet", "--extract-audio", "--audio-quality" ,"0", "--audio-format", "mp3", "--embed-thumbnail", "--output", output_format, video_id])
 
