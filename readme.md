@@ -2,7 +2,7 @@
 
 A python script to convert a YouTube playlist to an mp3 podcast. Utilises youtube-dl and ffmpeg.
 
-Tested on MacOS and Windows - should work on Linux too.
+Tested on MacOS using Homebrew to install youtube-dl and ffmpeg. Should work on Windows and Linux too. 
 
 ## Requirements:
 
