@@ -31,15 +31,19 @@ os.makedirs(temp_path, exist_ok=True)
 # Full file path for the finished files to be saved in.
 save_path = os.path.join(save_location,podcast_author,podcast_title)
 os.makedirs(save_path, exist_ok=True)
+print("------------------")
 print("[playlist2podcast] Final Output Location: " + save_path)
 
 # Runs youtube-dl to retrieve the contents of the playlist without actually downloading it.
-print("[youtube-dl] Downloading playlist information...")
+print("[playlist2podcast] Downloading playlist information...")
 playlist_contents = subprocess.getoutput([youtube_dl_path + " -j --flat-playlist " + playlist_url])
 
 # Turns the multi-line string returned from the previous command into a list
 playlist_contents_list = playlist_contents.splitlines()
 total_playlist_items = len(playlist_contents_list)
+print("[playlist2podcast] Playlist contains " + str(total_playlist_items) + " videos.")
+print("[playlist2podcast] Beginning download...")
+print("------------------")
 
 # Runs through the list and downloads/converts each video
 for index, video in enumerate(playlist_contents_list):
@@ -79,5 +83,7 @@ for index, video in enumerate(playlist_contents_list):
 
     # Deletes the temp file (the one without the metadata)
     os.remove(temp_file_path)
+    print("------------------")
+
 
 print("Complete! Downloaded " + str(total_playlist_items) + " tracks.")
