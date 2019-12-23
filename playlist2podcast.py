@@ -85,5 +85,6 @@ for index, video in enumerate(playlist_contents_list):
     os.remove(temp_file_path)
     print("------------------")
 
-
-print("Complete! Downloaded " + str(total_playlist_items) + " tracks.")
+# Prints the finishing text once the download is complete. 
+print("[playlist2podcast] Complete! Downloaded " + str(total_playlist_items) + " tracks.")
+print("------------------")

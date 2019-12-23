@@ -37,7 +37,7 @@ Python Modules:
 ## Notes
 
 * Tracks are automatically numbered based on their position in the playlist.
-* Artist, podcast title, and track number are embedded into the finished mp3 file.
+* Artist, podcast title, track number, and video thumbnail are embedded into the finished mp3 file.
 * track number and track title are set as the file name for easy organization.
 * Automatic sanitization of non-valid characters from the file name.
 * Creates directory structure for Podcast Author / Podcast title 
